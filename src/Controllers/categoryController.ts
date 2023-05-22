@@ -22,7 +22,7 @@ export const createCategory = async (req: Request, res: Response) => {
 
 export const getCategories = async (req: Request, res: Response) => {
   try {
-    const getCategories = await categoryRepository.find();
+    const getCategories = await categoryRepository.find({});
 
     if (getCategories) {
       return res.status(200).json({ data: getCategories });

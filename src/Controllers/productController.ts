@@ -48,7 +48,7 @@ export const getAllProduct = async (req: Request, res: Response) => {
     });
 
     if (data) {
-      return res.status(200).json({ message: data });
+      return res.status(200).json({ data: data });
     } else {
       return res.status(400).json("No product found");
     }
@@ -93,10 +93,27 @@ export const updateProduct = async (req: Request, res: Response) => {
     if (!name || !description || !price) {
       return res.status(400).json({ message: "All fields must be filled" });
     }
+
     return res.status(200).json({
       message: "Product Updated",
       data: `${updateUser.affected} row updated`,
     });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    const { id }: any = req.params;
+
+    const deleteProduct = await ProductRepository.delete({ id });
+
+    if (deleteProduct.affected === 0) {
+      return res.status(400).json({ message: "Product already deleted" });
+    }
+    return res.status(200).json({ success: "Successfully deleted" });
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
