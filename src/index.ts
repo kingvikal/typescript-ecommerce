@@ -5,6 +5,13 @@ import morgan from "morgan";
 import userRoute from "./Routes/userRoute";
 import categoryRoute from "./Routes/categoryRoute";
 import productRoute from "./Routes/productRoute";
+import orderRoute from "./Routes/orderRoute";
+import orderItemRoute from "./Routes/orderItemRoute";
+import paymentRoute from "./Routes/paymentRoute";
+import wishlistRoute from "./Routes/wishlistRoute";
+import shipmentRoute from "./Routes/shipmentRoute";
+
+import cartRoute from "./Routes/cartRoute";
 import { dbConnect } from "./database/dbConnect";
 
 dotenv.config();
@@ -19,6 +26,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/user", userRoute);
 app.use("/category", categoryRoute);
 app.use("/product", productRoute);
+app.use("/order", orderRoute);
+app.use("/orderItem", orderItemRoute);
+app.use("/payment", paymentRoute);
+app.use("/wishlist", wishlistRoute);
+app.use("/shipment", shipmentRoute);
+app.use("/cart", cartRoute);
 
 dbConnect();
 

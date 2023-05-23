@@ -1,5 +1,6 @@
 import { Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Product } from "./productEntity";
+import { User } from "./userEntity";
 
 @Entity()
 export class WishList {
@@ -8,4 +9,7 @@ export class WishList {
 
   @ManyToOne(()=> Product, (product)=> product.wishlist)
   product: Product;
+
+  @ManyToOne(()=> User, (user)=> user.wishlist)
+  user: User
 }

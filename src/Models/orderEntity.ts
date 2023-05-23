@@ -1,6 +1,14 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { OrderItem } from "./orderItemEntity";
 import { Payment } from "./paymentEntity";
+import { User } from "./userEntity";
+import { Shipment } from "./shipmentEntity";
 
 @Entity()
 export class Order {
@@ -18,4 +26,10 @@ export class Order {
 
   @OneToMany(() => Payment, (payment) => payment.order)
   payment: Payment[];
+
+  @ManyToOne(() => User, (user) => user.order)
+  user: User;
+
+  @ManyToOne(()=> Shipment, (shipment) => shipment.order)
+  shipment: Shipment;
 }

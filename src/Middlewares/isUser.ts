@@ -36,7 +36,6 @@ export const IsUser = async (
     if (!user) {
       return res.status(400).json("invalid");
     }
-
     req.user = user;
 
     next();

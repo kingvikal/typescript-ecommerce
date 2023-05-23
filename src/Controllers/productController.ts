@@ -19,21 +19,18 @@ export const createProduct = async (req: Request, res: Response) => {
     product.name = name;
     product.description = description;
     product.price = price;
+
     if (category) product.category = category;
     else return res.status(400).send("Invalid Category");
 
     if (!name || !description || !price) {
       return res.status(400).json({ message: "must fill all fields" });
     }
-    await ProductRepository.save(product)
-      .then(() => {
-        return res
-          .status(200)
-          .json({ message: "Product created successfully", product });
-      })
-      .catch((err) => {
-        return res.status(400).json({ errorMessage: err });
-      });
+    await ProductRepository.save(product);
+
+    return res
+      .status(200)
+      .json({ message: "Product created successfully", product });
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);

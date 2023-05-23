@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Order } from "./orderEntity";
+import { User } from "./userEntity";
 
 enum PaymentEnum {
   CASH = "cash",
@@ -23,6 +24,9 @@ export class Payment {
   @Column()
   amount: number;
 
-  @ManyToOne(()=> Order, (order)=> order.payment)
-  order: Order
+  @ManyToOne(() => Order, (order) => order.payment)
+  order: Order;
+
+  @ManyToOne(()=> User, (user)=> user.payment)
+  user: User
 }

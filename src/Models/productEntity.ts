@@ -11,7 +11,6 @@ import { Category } from "./categoryEntity";
 import { WishList } from "./wishlistEntity";
 import { Cart } from "./cartEntity";
 import { OrderItem } from "./orderItemEntity";
-import { Order } from "./orderEntity";
 
 @Entity()
 export class Product {
