@@ -3,6 +3,11 @@ import { DataSource } from "typeorm";
 import { User } from "../Models/userEntity";
 import { Category } from "../Models/categoryEntity";
 import { Product } from "../Models/productEntity";
+import { WishList } from "../Models/wishlistEntity";
+import { Cart } from "../Models/cartEntity";
+import { Order } from "../Models/orderEntity";
+import { OrderItem } from "../Models/orderItemEntity";
+import { Payment } from "../Models/paymentEntity";
 
 dotenv.config();
 
@@ -14,5 +19,14 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   database: process.env.DB_DATABASE,
   synchronize: true,
-  entities: [User, Category, Product],
+  entities: [
+    User,
+    Category,
+    Product,
+    WishList,
+    Cart,
+    Order,
+    OrderItem,
+    Payment,
+  ],
 });
