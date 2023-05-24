@@ -2,8 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -35,7 +38,7 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.product)
   category: Category;
 
-  @OneToMany(() => WishList, (wishlist) => wishlist.product)
+  @ManyToMany(() => WishList, (wishlist) => wishlist.product)
   wishlist: WishList[];
 
   @OneToMany(() => Cart, (cart) => cart.product)

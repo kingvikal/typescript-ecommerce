@@ -2,7 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -39,8 +42,8 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => WishList, (wishlist) => wishlist.user)
-  wishlist: WishList[];
+  @OneToOne(()=> WishList, (wishlist)=> wishlist.user)
+  wishlist: WishList
 
   @OneToMany(() => Payment, (payment) => payment.user)
   payment: Payment[];

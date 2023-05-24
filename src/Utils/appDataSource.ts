@@ -30,5 +30,6 @@ export const AppDataSource = new DataSource({
     OrderItem,
     Payment,
     Shipment,
+    WishList,
   ],
 });

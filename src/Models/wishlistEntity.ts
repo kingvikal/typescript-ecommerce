@@ -1,4 +1,13 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Product } from "./productEntity";
 import { User } from "./userEntity";
 
@@ -7,9 +16,11 @@ export class WishList {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(()=> Product, (product)=> product.wishlist)
-  product: Product;
+  @ManyToMany(() => Product, (product) => product.wishlist)
+  @JoinTable()
+  product: Product[];
 
-  @ManyToOne(()=> User, (user)=> user.wishlist)
-  user: User
+  @OneToOne(() => User, (user) => user.wishlist)
+  @JoinColumn()
+  user: User;
 }

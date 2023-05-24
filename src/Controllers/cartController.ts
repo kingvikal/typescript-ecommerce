@@ -65,6 +65,7 @@ export const getCartById = async (req: Request, res: Response) => {
 
     let data = await AppDataSource.getRepository(Cart).findOne({
       where: { id },
+      relations: ["user", "product"],
     });
 
     if (data) {

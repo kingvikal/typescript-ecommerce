@@ -61,6 +61,7 @@ export const getProductById = async (req: Request, res: Response) => {
 
     let data = await ProductRepository.findOne({
       where: { id },
+      relations: ["product"],
     });
 
     if (data) {
