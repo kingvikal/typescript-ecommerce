@@ -2,8 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -11,9 +10,8 @@ import {
 } from "typeorm";
 import { WishList } from "./wishlistEntity";
 import { Payment } from "./paymentEntity";
-import { Order } from "./orderEntity";
 import { Cart } from "./cartEntity";
-import { Shipment } from "./shipmentEntity";
+import { Order } from "./orderEntity";
 
 enum UserRole {
   ADMIN = "admin",
@@ -42,20 +40,17 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(()=> WishList, (wishlist)=> wishlist.user)
-  wishlist: WishList
+  @OneToOne(() => WishList, (wishlist) => wishlist.user)
+  wishlist: WishList;
 
   @OneToMany(() => Payment, (payment) => payment.user)
   payment: Payment[];
 
-  @OneToMany(() => Order, (order) => order.user)
-  order: Order[];
-
   @OneToMany(() => Cart, (cart) => cart.user)
   cart: Cart[];
 
-  @OneToMany(() => Shipment, (shipment) => shipment.user)
-  shipment: Shipment[];
+  @OneToMany(() => Order, (order) => order.user)
+  order: Order[];
 
   @Column({ type: "enum", enum: UserRole, default: UserRole.CUSTOMER })
   userType: UserRole;

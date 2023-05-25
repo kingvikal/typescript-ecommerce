@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Order } from "./orderEntity";
 import { User } from "./userEntity";
 
@@ -24,8 +24,8 @@ export class Payment {
   @Column()
   amount: number;
 
-  @ManyToOne(() => Order, (order) => order.payment)
-  order: Order;
+  @OneToMany(() => Order, (order) => order.payments)
+  order: Order[];
 
   @ManyToOne(()=> User, (user)=> user.payment)
   user: User

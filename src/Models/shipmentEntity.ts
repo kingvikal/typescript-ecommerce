@@ -4,6 +4,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Order } from "./orderEntity";
@@ -26,9 +27,8 @@ export class Shipment {
   @CreateDateColumn()
   shipmentDate: Date;
 
-  @OneToMany(()=> Order, (order)=> order.shipment)
-  order: Order[]
+  @OneToOne(() => Order, (order) => order.shipment)
+  order: Order;
 
-  @ManyToOne(()=> User, (user) => user.shipment)
-  user: User;
+
 }

@@ -2,11 +2,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -34,6 +32,9 @@ export class Product {
 
   @Column()
   price: number;
+
+  @Column({ default: 1 })
+  quantity: number;
 
   @ManyToOne(() => Category, (category) => category.product)
   category: Category;

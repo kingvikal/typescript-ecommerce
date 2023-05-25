@@ -20,10 +20,6 @@ export const createWishlist = async (req: UserRequest, res: Response) => {
         where: { id: ProductId },
       }
     );
-    console.log({ product });
-    // if (!product) {
-    //   return res.status(400).json("Product not found");
-    // }
     const user: User = await AppDataSource.getRepository(User).findOne({
       where: { id },
     });
@@ -34,7 +30,6 @@ export const createWishlist = async (req: UserRequest, res: Response) => {
       relations: ["user", "product"],
       where: { user: { id: id } },
     });
-    console.log({ wishlist });
 
     let resultTemp = new WishList();
     let result: any;
