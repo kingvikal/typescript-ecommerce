@@ -13,9 +13,6 @@ export class OrderItem {
   @Column("float")
   unit_price: number;
 
-  @Column({ nullable: true })
-  totalPrice: number;
-
   @ManyToOne(() => Order, (order) => order.orderItem)
   order: Order;
 

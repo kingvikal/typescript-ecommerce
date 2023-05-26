@@ -1,45 +1,25 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../Utils/appDataSource";
 import { Product } from "../Models/productEntity";
-import { Order } from "../Models/orderEntity";
 import { OrderItem } from "../Models/orderItemEntity";
 
-export const createOrderItem = async (req: Request, res: Response) => {
-  try {
-    const { productId, orderId, quantity } = req.body;
+export const createOrderItem = async (productId: any, quantity: any) => {
+  const product: Product = await AppDataSource.getRepository(Product).findOne({
+    where: { id: productId },
+    relations: ["orderItem"],
+  });
 
-    const product: Product = await AppDataSource.getRepository(Product).findOne(
-      {
-        where: { id: productId },
-        relations: ["orderItem"],
-      }
-    );
+  // console.log(product);
 
-    const order = await AppDataSource.getRepository(Order).findOne({
-      where: { id: orderId },
-    });
+  const orderItem = new OrderItem();
 
-    // const orderItems = await AppDataSource.getRepository(OrderItem).findOne({
-    //     where: {totalPrice: totalPrice}
-    // });
-    const orderItem = new OrderItem();
+  orderItem.product = product;
+  orderItem.quantity = quantity;
+  orderItem.unit_price = product.price;
 
-    orderItem.product = product;
-    orderItem.order = order;
-    orderItem.quantity = quantity;
+  await AppDataSource.getRepository(OrderItem).save(orderItem);
 
-    orderItem.unit_price = product.price;
-
-    orderItem.totalPrice = orderItem.quantity * orderItem.unit_price;
-
-    await AppDataSource.getRepository(OrderItem).save(orderItem);
-    return res
-      .status(200)
-      .json({ message: "orderItem created successfully", success: orderItem });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
+  return [product, quantity];
 };
 
 export const getAllOrderItem = async (req: Request, res: Response) => {

@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
 import { OrderItem } from "../Models/orderItemEntity";
 import { AppDataSource } from "../Utils/appDataSource";
-import { Payment } from "../Models/paymentEntity";
-import { Shipment } from "../Models/shipmentEntity";
 import { User } from "../Models/userEntity";
 import { Order } from "../Models/orderEntity";
+import { createOrderItem } from "./orderItemController";
 
 interface UserRequest extends Request {
   user: any;
@@ -12,47 +11,48 @@ interface UserRequest extends Request {
 
 const userRepo = AppDataSource.getRepository(User);
 const orderItemRepo = AppDataSource.getRepository(OrderItem);
-const paymentRepo = AppDataSource.getRepository(Payment);
-const shipmentRepo = AppDataSource.getRepository(Shipment);
 const orderRepo = AppDataSource.getRepository(Order);
 
 export const createOrder = async (req: UserRequest, res: Response) => {
   try {
-    const { orderItemId, paymentId, shipmentId, orderDate, totalPrice }: any =
-      req.body;
+    const {
+      orderItemId,
+      shippingDetails,
+      productId,
+      quantity,
+      orderType,
+    }: any = req.body;
     const { id } = req.user;
 
     const orderItem: OrderItem = await orderItemRepo.findOne({
       where: { id: orderItemId },
+      relations: ["order"],
     });
-
-    const payment = await paymentRepo.findOne({ where: { id: paymentId } });
-
-    const shipment = await shipmentRepo.findOne({ where: { id: shipmentId } });
+    console.log(orderItem);
 
     const user = await userRepo.findOne({
       where: { id: id },
     });
 
-    const order: Order = await orderRepo.findOne({
-      relations: ["user", "payments", "shipment", "orderItem"],
-      where: { user: { id: id } },
-    });
+    createOrderItem(productId, quantity);
+
+    let totalPrice = (items: any) => {
+      return items.reduce((prevValue: any, currentValue: any) => {
+        return prevValue + currentValue.quantity * currentValue.unit_price;
+      }, 0);
+    };
 
     const orders = new Order();
 
-    let result: any;
-
-    orders.totalPrice = orderItem.totalPrice * totalPrice;
-    orders.payments = payment;
-    orders.shipment = shipment;
     orders.orderDate = new Date();
     orders.user = user;
-    orders.shippedTo = user.firstname;
     orders.orderItem = [orderItem];
-    result = await orderRepo.save(orders);
+    orders.totalPrice = totalPrice(orders.orderItem);
+    orders.shippingDetails = shippingDetails;
+    orders.shippedTo = user.firstname;
+    orders.orderType = orderType;
 
-    if (result) {
+    if (orders) {
       await orderRepo.save(orders);
       return res
         .status(200)
@@ -64,11 +64,20 @@ export const createOrder = async (req: UserRequest, res: Response) => {
   }
 };
 
-export const getOrder = async (req: Request, res: Response) => {
+export const getOrder = async (req: UserRequest, res: Response) => {
   try {
+    const { id } = req.user;
+    const user = await userRepo.findOne({
+      where: { id: id },
+    });
+
     const order = await AppDataSource.getRepository(Order).find({
+      where: { user: id },
       relations: ["orderItem", "user", "orderItem.product"],
     });
+
+    console.log("order", order);
+
     if (order) {
       return res.status(200).json({ data: order });
     }

@@ -9,8 +9,8 @@ import {
 } from "typeorm";
 import { OrderItem } from "./orderItemEntity";
 import { Payment } from "./paymentEntity";
-import { Shipment } from "./shipmentEntity";
 import { User } from "./userEntity";
+import { ShippingDetails } from "../Utils/data";
 
 enum ORDERSTATUS {
   PROCESSED = "processed",
@@ -34,6 +34,9 @@ export class Order {
   @Column({ nullable: true })
   shippedTo: string;
 
+  @Column("jsonb")
+  shippingDetails: ShippingDetails;
+
   @Column({ type: "enum", enum: ORDERSTATUS, default: ORDERSTATUS.PROCESSED })
   orderType: ORDERSTATUS;
 
@@ -45,8 +48,4 @@ export class Order {
 
   @ManyToOne(() => User, (user) => user.order)
   user: User;
-
-  @OneToOne(() => Shipment, (shipment) => shipment.order)
-  @JoinColumn()
-  shipment: Shipment;
 }

@@ -8,7 +8,6 @@ import { Cart } from "../Models/cartEntity";
 import { Order } from "../Models/orderEntity";
 import { OrderItem } from "../Models/orderItemEntity";
 import { Payment } from "../Models/paymentEntity";
-import { Shipment } from "../Models/shipmentEntity";
 
 dotenv.config();
 
@@ -29,7 +28,6 @@ export const AppDataSource = new DataSource({
     Order,
     OrderItem,
     Payment,
-    Shipment,
     WishList,
   ],
 });
