@@ -2,24 +2,33 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../Utils/appDataSource";
 import { Product } from "../Models/productEntity";
 import { OrderItem } from "../Models/orderItemEntity";
+import { Order } from "../Models/orderEntity";
 
-export const createOrderItem = async (productId: any, quantity: any) => {
+export const createOrderItem = async (
+  productId: any,
+  quantity: any,
+  orderId: any
+) => {
   const product: Product = await AppDataSource.getRepository(Product).findOne({
     where: { id: productId },
     relations: ["orderItem"],
   });
 
-  // console.log(product);
+  const order: Order = await AppDataSource.getRepository(Order).findOne({
+    where: { id: orderId },
+    relations: ["orderItem"]
+  });
 
   const orderItem = new OrderItem();
 
   orderItem.product = product;
   orderItem.quantity = quantity;
   orderItem.unit_price = product.price;
+  orderItem.order = order;
 
   await AppDataSource.getRepository(OrderItem).save(orderItem);
 
-  return [product, quantity];
+  return [product, quantity, orderId];
 };
 
 export const getAllOrderItem = async (req: Request, res: Response) => {

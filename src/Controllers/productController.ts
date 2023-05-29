@@ -8,9 +8,9 @@ const CategoryRepository = AppDataSource.getRepository(Category);
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { id } = req.body;
+    const { categoryId } = req.body;
     const category: Category = await CategoryRepository.findOne({
-      where: { id },
+      where: { id: categoryId },
     });
 
     const { name, description, price } = req.body;

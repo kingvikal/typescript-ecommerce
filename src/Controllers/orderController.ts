@@ -21,6 +21,7 @@ export const createOrder = async (req: UserRequest, res: Response) => {
       productId,
       quantity,
       orderType,
+      orderId,
     }: any = req.body;
     const { id } = req.user;
 
@@ -28,13 +29,10 @@ export const createOrder = async (req: UserRequest, res: Response) => {
       where: { id: orderItemId },
       relations: ["order"],
     });
-    console.log(orderItem);
 
     const user = await userRepo.findOne({
       where: { id: id },
     });
-
-    createOrderItem(productId, quantity);
 
     let totalPrice = (items: any) => {
       return items.reduce((prevValue: any, currentValue: any) => {
@@ -53,7 +51,10 @@ export const createOrder = async (req: UserRequest, res: Response) => {
     orders.orderType = orderType;
 
     if (orders) {
+      createOrderItem(productId, quantity, orderId);
+
       await orderRepo.save(orders);
+
       return res
         .status(200)
         .json({ success: "Order created Successfully", data: orders });
