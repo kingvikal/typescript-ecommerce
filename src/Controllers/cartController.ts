@@ -31,11 +31,10 @@ export const createCart = async (req: UserRequest, res: Response) => {
     product.quantity = product.quantity + quantity;
 
     const cart = new Cart();
-    if (user && product) {
-      cart.quantity = quantity;
-      cart.user = user;
-      cart.product = product;
-    }
+
+    cart.quantity = quantity;
+    cart.user = user;
+    cart.product = product;
 
     if (product === null && !product) {
       return res.status(400).json({

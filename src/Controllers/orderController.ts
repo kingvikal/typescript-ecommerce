@@ -25,18 +25,22 @@ export const createOrder = async (req: UserRequest, res: Response) => {
     }: any = req.body;
     const { id } = req.user;
 
-    const orderItem: OrderItem = await orderItemRepo.findOne({
-      where: { id: orderItemId },
-      relations: ["order"],
-    });
+    const orderItem: OrderItem = await orderItemRepo
+      .createQueryBuilder("orderItem")
+      .leftJoinAndSelect("orderItem.order", "order")
+      .where("orderItem.id = :orderItemId", { orderItemId })
+      .getOne();
 
-    const user = await userRepo.findOne({
-      where: { id: id },
-    });
+    const user = await userRepo
+      .createQueryBuilder("user")
+      .where("user.id = :id", { id })
+      .getOne();
+
+    console.log("user", user);
 
     let totalPrice = (items: any) => {
-      return items.reduce((prevValue: any, currentValue: any) => {
-        return prevValue + currentValue.quantity * currentValue.unit_price;
+      return items.reduce((acc: any, curr: any) => {
+        return acc + curr.quantity * curr.unit_price;
       }, 0);
     };
 
@@ -47,13 +51,12 @@ export const createOrder = async (req: UserRequest, res: Response) => {
     orders.orderItem = [orderItem];
     orders.totalPrice = totalPrice(orders.orderItem);
     orders.shippingDetails = shippingDetails;
-    orders.shippedTo = user.firstname;
+    orders.shippedTo = `this is shipped to : ${user.firstname}`;
     orders.orderType = orderType;
 
     if (orders) {
-      createOrderItem(productId, quantity, orderId);
-
       await orderRepo.save(orders);
+      createOrderItem(productId, quantity, orderId);
 
       return res
         .status(200)
@@ -104,15 +107,15 @@ export const getOrderById = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteOrder = async (req: Request, res: Response) => {
+export const deleteOrder = async (req: UserRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id }: any = req.params;
 
     const deleteOrder = await orderRepo
       .createQueryBuilder("order")
       .delete()
       .from(Order)
-      .where("order.id = :id", { id })
+      .where("id = :id", { id })
       .execute();
 
     if (deleteOrder.affected === 0) {
