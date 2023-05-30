@@ -55,7 +55,7 @@ export const Login = async (req: Request, res: Response) => {
   try {
     if (email && password) {
       const payload = { id: user.id, email: user.email };
-      const option = { expiresIn: "1d" };
+      const option = { expiresIn: "365d" };
       const accessToken: any = jwt.sign(
         payload,
         process.env.JWT_SECRET,

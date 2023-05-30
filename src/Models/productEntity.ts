@@ -39,12 +39,16 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.product)
   category: Category;
 
-  @ManyToMany(() => WishList, (wishlist) => wishlist.product)
+  @ManyToMany(() => WishList, (wishlist) => wishlist.product, {
+    onDelete: "CASCADE",
+  })
   wishlist: WishList[];
 
-  @OneToMany(() => Cart, (cart) => cart.product)
+  @OneToMany(() => Cart, (cart) => cart.product, { onDelete: "CASCADE" })
   cart: Cart[];
 
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.product, {
+    onDelete: "CASCADE",
+  })
   orderItem: OrderItem[];
 }

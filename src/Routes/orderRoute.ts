@@ -2,7 +2,7 @@ import { Router } from "express";
 import { IsUser } from "../Middlewares/isUser";
 import {
   createOrder,
-  deletOrder,
+  deleteOrder,
   getOrder,
   getOrderById,
 } from "../Controllers/orderController";
@@ -13,6 +13,6 @@ const router = Router();
 router.post("/create", IsUser, createOrder);
 router.get("/getOrder", IsUser, isAdmin, getOrder);
 router.get("/getById/:id", IsUser, isAdmin, getOrderById);
-router.delete("/deleteOrder/:id", IsUser, deletOrder);
+router.delete("/deleteOrder/:id", IsUser, isAdmin, deleteOrder);
 
 export default router;

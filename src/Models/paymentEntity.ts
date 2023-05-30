@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Order } from "./orderEntity";
 import { User } from "./userEntity";
 
@@ -24,9 +30,11 @@ export class Payment {
   @Column()
   amount: number;
 
-  @OneToMany(() => Order, (order) => order.payments)
+  @OneToMany(() => Order, (order) => order.payments, {
+    onDelete: "CASCADE",
+  })
   order: Order[];
 
-  @ManyToOne(()=> User, (user)=> user.payment)
-  user: User
+  @ManyToOne(() => User, (user) => user.payment)
+  user: User;
 }

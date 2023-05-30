@@ -4,37 +4,50 @@ import { AppDataSource } from "../Utils/appDataSource";
 import { User } from "../Models/userEntity";
 import { Product } from "../Models/productEntity";
 
-const cartRepository = AppDataSource.getRepository(Cart);
 interface UserRequest extends Request {
   user: any;
 }
+const userRepo = AppDataSource.getRepository(User);
+const productRepo = AppDataSource.getRepository(Product);
+const cartRepo = AppDataSource.getRepository(Cart);
 
 export const createCart = async (req: UserRequest, res: Response) => {
   try {
     const { id } = req.user;
 
-    const { id: productId, quantity } = req.body;
+    const { productId, quantity } = req.body;
 
-    const user: User = await AppDataSource.getRepository(User).findOne({
-      where: { id },
-    });
+    const user: User = await userRepo
+      .createQueryBuilder("user")
+      .where("user.id = :id", { id })
+      .getOne();
 
-    const product = await AppDataSource.getRepository(Product).findOne({
-      where: { id: productId },
-    });
+    const product = await productRepo
+      .createQueryBuilder("product")
+      .innerJoinAndSelect("product.cart", "cart")
+      .where("product.id = :productId", { productId })
+      .getOne();
+
+    product.quantity = product.quantity + quantity;
 
     const cart = new Cart();
-    cart.quantity = quantity;
-    cart.user = user;
-    cart.product = product;
+    if (user && product) {
+      cart.quantity = quantity;
+      cart.user = user;
+      cart.product = product;
+    }
+
+    if (product === null && !product) {
+      return res.status(400).json({
+        message: "product cannot be empty",
+      });
+    }
 
     if (!quantity) {
       return res.status(400).json({ message: "fill the fields" });
     }
-
-    await cartRepository.save(cart);
-
-    return res.status(200).json({ message: "cart created successfull", cart });
+    await cartRepo.save(cart);
+    return res.status(200).json({ message: "cart added successfull", cart });
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
@@ -43,10 +56,11 @@ export const createCart = async (req: UserRequest, res: Response) => {
 
 export const getAllCart = async (req: Request, res: Response) => {
   try {
-    const cart = await AppDataSource.getRepository(Cart).find({
-      relations: ["user", "product"],
-    });
-    console.log(cart, "cart");
+    const cart = await cartRepo
+      .createQueryBuilder("cart")
+      .leftJoinAndSelect("cart.user", "user")
+      .leftJoinAndSelect("cart.product", "product")
+      .getMany();
 
     if (cart) {
       return res.status(200).json({ data: cart });
@@ -63,10 +77,12 @@ export const getCartById = async (req: Request, res: Response) => {
   try {
     const { id }: any = req.params;
 
-    let data = await AppDataSource.getRepository(Cart).findOne({
-      where: { id },
-      relations: ["user", "product"],
-    });
+    const data = await cartRepo
+      .createQueryBuilder("cart")
+      .where("cart.id = :id", { id })
+      .leftJoinAndSelect("cart.user", "user")
+      .leftJoinAndSelect("cart.product", "product")
+      .getOne();
 
     if (data) {
       return res.status(200).json({ data: data });
@@ -84,13 +100,21 @@ export const updateCart = async (req: Request, res: Response) => {
     const { id }: any = req.params;
     const { quantity } = req.body;
 
-    let updateCart = await AppDataSource.getRepository(Cart).update(
-      { id },
-      { quantity: quantity }
-    );
+    let updateCart = await cartRepo
+      .createQueryBuilder("cart")
+      .update(Cart)
+      .set({ quantity: quantity })
+      .where("cart.id = :id", { id })
+      .execute();
 
     if (!quantity) {
       return res.status(400).json({ message: "fill all field" });
+    }
+
+    if (updateCart.affected === 0) {
+      return res
+        .status(400)
+        .json({ message: `Sorry, the cart is already updated or not found` });
     }
 
     if (updateCart) {
@@ -109,7 +133,12 @@ export const deleteCart = async (req: Request, res: Response) => {
   try {
     const { id }: any = req.params;
 
-    const deleteCart = await AppDataSource.getRepository(Cart).delete({ id });
+    const deleteCart = await cartRepo
+      .createQueryBuilder("cart")
+      .delete()
+      .from(Cart)
+      .where("cart.id = :id", { id })
+      .execute();
 
     if (deleteCart.affected === 0 || !deleteCart) {
       return res

@@ -16,15 +16,15 @@ export const createOrderItem = async (
 
   const order: Order = await AppDataSource.getRepository(Order).findOne({
     where: { id: orderId },
-    relations: ["orderItem"]
+    relations: ["orderItem"],
   });
 
   const orderItem = new OrderItem();
 
-  orderItem.product = product;
-  orderItem.quantity = quantity;
-  orderItem.unit_price = product.price;
   orderItem.order = order;
+  orderItem.product = product;
+  orderItem.unit_price = product.price;
+  orderItem.quantity = quantity;
 
   await AppDataSource.getRepository(OrderItem).save(orderItem);
 

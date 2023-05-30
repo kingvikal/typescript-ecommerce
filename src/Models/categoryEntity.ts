@@ -13,7 +13,10 @@ export class Category {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @OneToMany(() => Product, (product) => product.category)
+  @OneToMany(() => Product, (product) => product.category, {
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE"
+  })
   product: Product[];
 
   @Column({ type: "enum", enum: CategoryEnum, default: CategoryEnum.FASHION })

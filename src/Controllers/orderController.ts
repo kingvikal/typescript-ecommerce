@@ -72,14 +72,14 @@ export const getOrder = async (req: UserRequest, res: Response) => {
       where: { id: id },
     });
 
-    const order = await AppDataSource.getRepository(Order).find({
-      where: { user: id },
-      relations: ["orderItem", "user", "orderItem.product"],
-    });
+    const order = await orderRepo
+      .createQueryBuilder("order")
+      .innerJoinAndSelect("order.orderItem", "orderItem")
+      .innerJoinAndSelect("order.user", "user")
+      .innerJoinAndSelect("orderItem.product", " product")
+      .getMany();
 
-    console.log("order", order);
-
-    if (order) {
+    if (user && order) {
       return res.status(200).json({ data: order });
     }
   } catch (err) {
@@ -93,7 +93,7 @@ export const getOrderById = async (req: Request, res: Response) => {
     const { id }: any = req.params;
     const order = await AppDataSource.getRepository(Order).findOne({
       where: { id: id },
-      relations: ["orderItem", "user", "orderItem.product"],
+      relations: { orderItem: true, user: true },
     });
     if (order) {
       return res.status(200).json({ data: order });
@@ -104,18 +104,24 @@ export const getOrderById = async (req: Request, res: Response) => {
   }
 };
 
-export const deletOrder = async (req: Request, res: Response) => {
+export const deleteOrder = async (req: Request, res: Response) => {
   try {
-    const { id }: any = req.params;
-    const order = await AppDataSource.getRepository(Order).delete({
-      id,
-    });
-    if (order.affected === 0) {
+    const { id } = req.params;
+
+    const deleteOrder = await orderRepo
+      .createQueryBuilder("order")
+      .delete()
+      .from(Order)
+      .where("order.id = :id", { id })
+      .execute();
+
+    if (deleteOrder.affected === 0) {
       return res.status(400).json({ message: "order already deleted" });
     }
+
     return res.status(200).json({
       message: "successfully deleted order",
-      data: `${order.affected} row deleted`,
+      data: `${deleteOrder.affected} row deleted`,
     });
   } catch (err) {
     console.log(err);

@@ -1,10 +1,8 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { OrderItem } from "./orderItemEntity";
@@ -40,7 +38,9 @@ export class Order {
   @Column({ type: "enum", enum: ORDERSTATUS, default: ORDERSTATUS.PROCESSED })
   orderType: ORDERSTATUS;
 
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
+    onDelete: "CASCADE",
+  })
   orderItem: OrderItem[];
 
   @ManyToOne(() => Payment, (payment) => payment.order)

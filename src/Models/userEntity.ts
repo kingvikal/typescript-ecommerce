@@ -43,13 +43,19 @@ export class User {
   @OneToOne(() => WishList, (wishlist) => wishlist.user)
   wishlist: WishList;
 
-  @OneToMany(() => Payment, (payment) => payment.user)
+  @OneToMany(() => Payment, (payment) => payment.user, {
+    onDelete: "CASCADE",
+  })
   payment: Payment[];
 
-  @OneToMany(() => Cart, (cart) => cart.user)
+  @OneToMany(() => Cart, (cart) => cart.user, {
+    onDelete: "CASCADE",
+  })
   cart: Cart[];
 
-  @OneToMany(() => Order, (order) => order.user)
+  @OneToMany(() => Order, (order) => order.user, {
+    onDelete: "CASCADE",
+  })
   order: Order[];
 
   @Column({ type: "enum", enum: UserRole, default: UserRole.CUSTOMER })
